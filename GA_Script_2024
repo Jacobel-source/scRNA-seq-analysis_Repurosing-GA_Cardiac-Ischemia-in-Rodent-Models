@@ -1,0 +1,681 @@
+Seurat_object@meta.data %>% count(Day, Condition)
+
+#PC1_PC2
+DimPlot(object = scRNA_Cop, reduction = "pca", pt.size = 0.5, label = F, label.size = 0)
+DimPlot(object = scRNA_Cop, reduction = "umap", pt.size = 0.2, label = T, label.size = 6, order = F)
+FeaturePlot(scRNA_Cop, features = c("Postn"), split.by = "Day", pt.size = 0.4, min.cutoff = 0, label = F, label.size = 3,cols = c("gray", "blue"))
+FeaturePlot(scRNA_Cop, features = c("Ccl24"), pt.size = 0.4, min.cutoff = 0, order = T, label.size = 5,cols = c("lightgray", "darkgreen"))
+VlnPlot(scRNA_Cop, features = c("Nfkb1","Bcl3","Cxcl3"), group.by = "seurat_clusters", log = T, pt.size = 0.2)
+VlnPlot(scRNA_Cop, features = c("Ccr2"), group.by = "Condition", log = T, pt.size = 0)
+
+seurObj_all_name <- RenameIdents(scRNA_Cop, '0'= "Mon/Mac1", '1'="Mono/Mac2",
+'2'= "Endothelilal cells", '3'="Mono/Mac3",
+'4'= "Neutrophils", '5'="Timd4+ Mac",
+'6'= "Lyve1+ Mac",'7'="MyoF",
+'8'= "T cells/NKs", '9'="Mono/Mac4",
+'10'= "Lymphatic ECs",'11'="Mono/Mac5",
+'12'= "Mac/Fibro",'13'= "B cells",'14'= "Fibroblasts",'15'=" " ,'16'="Smooth cells", '17'= "Pericytes", '18'= "Epicardial Fibroblasts")
+
+DimPlot(object = scRNA_Cop, reduction = "umap", split.by = "Day",pt.size = 0.4, label = F, label.size = 4, order = F)
+DimPlot(object = seurObj_all_name, reduction = "umap", pt.size = 0.5, label = T, label.size = 5, order = F)
+
+
+scRNA_Cop.markers <- FindAllMarkers(scRNA_Cop, only.pos = TRUE, min.pct = 0.2, logfc.threshold = 0.2)
+scRNA_Cop_markers_4dpi <- FindMarkers(scRNA_Cop, ident.1 = "dpi4_GA", ident.2 = "dpi4_Control",  group.by = "Condition", min.pct = 0.05,pseudocount.use = 0.1, logfc.threshold = 0.2)
+
+#saveRDS(scRNA_Cop_markers, file = "scRNA_Cop_markers.rds")
+write.table(scRNA_Cop_markers_4dpi, "~/Documents/Documents - jacobk's MacBookPro1/Tazhor's lab/Data set analysis/Copaxone/scRNAseq_1d and 4dpi/scRNA_GA_vs_Ctrl_markers_4dpi.csv")
+
+
+
+x1<- DimPlot(object = scRNA_Cop, reduction = "umap", pt.size = 0.2, label = T, label.size = 6, order = F)
+
+DotPlot(scRNA_Cop, features = c("Tnnt3"), col.min = 1, col.max = 5, cols = c("blue" ,"red"))+ RotatedAxis()
+
+x1+x2
+
+# Define a list of well-known cell-type-specific marker genes for each cell type
+cell_type_markers <- list(
+  "Macrophages" = c("Adgre1", "Cd14", "Cd168", "Mrc1", "Fcgr3a"),
+  "T Cells" = c("Cd3d", "Cd4", "Cd8A", "IL2ra", "Foxp3"),
+  # Add marker genes for other cell types as needed
+)
+
+scRNA_Cop_1dpi <- subset(scRNA_Cop, subset = Day == c("dpi1"))
+FeaturePlot(scRNA_Cop_1dpi, features = c("Olfm4"), split.by = "Condition", pt.size = 0.2, min.cutoff = 0.9, label = F, label.size = 9, order= T, cols = c("gray", "red"))
+dim1<- DimPlot(object = scRNA_Cop_4dpi, reduction = "umap", split.by = "Treatment",pt.size = 0.4, label = F, label.size = 4, order = F)
+dim2<- DimPlot(object = scRNA_Cop_1dpi, reduction = "umap", split.by = "Treatment",pt.size = 0.4, label = F, label.size = 4, order = F)
+
+FeaturePlot(scRNA_Cop, features = c("Acta2"),
+            pt.size = 0.4, min.cutoff = 0.2, order = F, label.size = 5,cols = c("gray", "blue"))
+FeaturePlot(scRNA_Cop, features = c("S100a9"),
+            pt.size = 0.4, min.cutoff = 2, order = T, label.size = 5,cols = c("gray", "blue"))
+FeaturePlot(scRNA_Cop, features = c("Cd68"),
+            pt.size = 0.4, min.cutoff = 1.2, order = T, label.size = 5,cols = c("gray", "blue"))
+FeaturePlot(scRNA_Cop, features = c("Lyve1"),
+            pt.size = 0.4, min.cutoff = 1.2, order = T, label.size = 5,cols = c("gray", "blue"))
+
+
+
+# In case we want to use only 4dpi data
+scRNA_Cop_4dpi <- subset(scRNA_Cop, subset = Day == c("dpi4"))
+DotPlot(scRNA_Cop, features = c("Ccl24"), group.by = "Condition", col.min = 0.5, col.max = 5, cols = c("blue" ,"red"))+ RotatedAxis()
+FeaturePlot(scRNA_Cop_4dpi,
+            features = c("Ccr2"),
+            pt.size = 0,            # Increase point size for better visibility
+            label = F,
+            split.by = "Condition",
+            reduction = "umap",
+            order = FALSE,          # Keep original order of points
+            cols = c("gray", "red"))# Adjust colors for better contrast
+FeaturePlot(scRNA_Cop_4dpi, features = c("C3"), pt.size = 0.7, min.cutoff = 1.6, split.by = "Condition", label = F, label.size = 5,cols = c("gray", "red"))
+VlnPlot(scRNA_Cop_4dpi, features = c("Tab2"), group.by = "Condition", log = F, pt.size = 0)
+
+# Visualize co-expression of two features simultaneously
+FeaturePlot(scRNA_Cop_4dpi, features = c("Ccr2", "Timd4"), blend = TRUE)
+
+# Create a dot plot of cell-type-specific marker genes
+DotPlot(TcellGroup4dpi, features = cell_type_markers, plot.legend = TRUE)
+
+# Create a feature plot for the selected cell-type-specific marker genes
+FeaturePlot(TcellGroup4dpi, features = unlist(cell_type_markers), pt.size = 0.5)
+
+# Use more informative variable names_reduced clusters
+seurat_object <- scRNA_Cop
+
+# Adjust the resolution parameter to minimize clusters (e.g., 0.2)
+#seurat_object <- FindClusters(seurat_object, resolution = 0.3)
+
+# Visualize the clustering results
+DimPlot(seurat_object, group.by = "seurat_clusters", label = 0.5) + ggtitle("Cluster Plot") +theme_minimal()
+
+#seurObj_all_name <- RenameIdents(seurat_object, '0'= "Mac1", '1'="DCs/Mono",
+                                 '2'= "Mono/Mac1", '3'="Endothelilal cells",
+                                 '4'= "Neutrophils", '5'="Mac/Fibro",
+                                 '6'= "Lyve1+ Mac",'7'="Resident Mac",
+                                 '8'= "Lymphoid cells", '9'="mono/Mac3",
+                                 '10'= "mono/Mac2",'11'="B Cells",
+                                 '12'= "Mac/Fibro",'13'="Smooth cells/Pericytes", '14'= "Lymphatic ECs")
+# 
+DimPlot(seurat_object, group.by = "seurat_clusters", label = 0.5) + ggtitle("Cluster Plot")
+
+# Visualize co-expression of two features simultaneously
+FeaturePlot(seurat_object, features = c("Lyve1","Timd4"), blend = TRUE, pt.size = 2, cols.use = c("blue", "red"), do.return = TRUE) +
+  ggtitle("Co-expression of Lyve1 and Timd4") +
+  theme_minimal() +
+  theme(legend.position = "right") +
+  labs(x = "Lyve1 Expression", y = "Timd4 Expression")
+
+FeaturePlot(object = scRNA_Cop_4dpi, features = c("Ccr2"), pt.size = 0, split.by = "orig.ident", reduction = "umap", order = T,
+            cols = c("lightgray", "red"), min.cutoff = 1.5)
+
+# Marophages Subseting- subclusters by clusters: 0, 1, 6, 7, 9, 10 #
+Mac<- readRDS(file = "scRNA_Cop_MacSubset1.rds")
+MacSubset1<- Mac
+DimPlot(MacSubset1, reduction = "umap",
+        label = T, label.size = 5,
+        order = F, pt.size = 0.1) %>% plot()
+
+
+
+#Getting rid of "Day 1" group, and stay only with the groups of Day 4 after injury
+MacrophageGroup4dpi <- subset(MacSubset1, subset = Day == c("dpi4"))
+
+DimPlot(MacrophageGroup4dpi, reduction = "umap",
+        label = T, label.size = 5,
+        order = F, pt.size = 0.1, split.by = "Condition") %>% plot()
+
+FeaturePlot(object = MacrophageGroup4dpi, features = c("Ccr2"), split.by = "Condition", pt.size = 0.6,
+            reduction = "umap", order = F, cols = c("lightgray", "red"), min.cutoff = 1)
+
+DotPlot(MacrophageGroup4dpi, features = c("Ccr2", "Il1b","Osm","Folr2"), group.by = "Condition", col.min = 0, col.max = 10, cols = c("blue" ,"red"))+ RotatedAxis()
+DotPlot(MacrophageGroup4dpi,
+        features = c("H2-Ab1","Ccr2","Il1b","Osm", "Folr2",
+                     "Timd4")) +
+  geom_point(aes(size= pct.exp), shape = 21, colour="black", stroke=0.1) +
+  scale_colour_viridis(option= "magma") +
+  guides(size=guide_legend(override.aes=list(shape=21, colour="black", fill="gray")))
+
+
+pdf("DotPlot_Mac4dpi.pdf", width = 6, height = 6)
+print(p1)
+dev.off()
+
+# Visualize the clustering results
+DimPlot_Mac4dpi<-DimPlot(MacrophageGroup4dpi, reduction = "umap",split.by = "orig.ident",
+        label = T, label.size = 5,
+        order = F, pt.size = 0.1) %>% plot()
+VlnPlot(MacSubset1, features = c("Ccr2"), group.by = "Condition", log = T, pt.size = 0)
+FeaturePlot(object = MacrophageGroup4dpi, features = c("Itgb5"), split.by = "Condition", pt.size = 0.6,
+            reduction = "umap", order = F, cols = c("lightgray", "red"), min.cutoff = 0.2)
+DensityPlot<- plot_density(MacrophageGroup4dpi,c("Ccr2"), size = 0.6)
+
+GeneSpecificForClusters<- VlnPlot(MacrophageGroup4dpi, features = c("Fcgr1","Lrg1", "Vcan","Lyve1","Ccl24", "Timd4","Mki67", "Fabp4","H2-Eb1"), log = F , group.by = "seurat_clusters",
+        pt.size = 0)
+Dp1<- DotPlot(MacrophageGroup4dpi, features = c("Lyve1"),group.by = "Condition", cols = c("blue" ,"red"))+ RotatedAxis()
+Dp2<- DotPlot(MacrophageGroup4dpi, features = c("Folr2"),group.by = "Condition", cols = c("blue" ,"red"))+ RotatedAxis()
+Dp3<- DotPlot(MacrophageGroup4dpi, features = c("Ccn1"),group.by = "Condition", cols = c("blue" ,"red"))+ RotatedAxis()
+
+Dp1+Dp2+Dp3
+
+pdf("DotPlot.pdf", width = 10, height = 10)
+print(dp1)
+dev.off()
+
+p1<- DimPlot(MacrophageGroup4dpi, reduction = "umap", split.by = "Condition",
+             label = T, label.size = 5,
+             order = F, pt.size = 0.1) %>% plot()
+FeaturePlot(object = MacrophageGroup4dpi, features = c("Ifi47"), pt.size = 0.7, split.by = "Condition", reduction = "umap", order = F,
+            cols = c("lightgray", "red"), min.cutoff = 0.9)
+p1+p2
+# find markers for every cluster compared to all remaining cells, report only the positive
+# ones
+MacSubset.markers <- FindAllMarkers(MacrophageGroup4dpi, only.pos = TRUE, min.pct = 0.2, logfc.threshold = 0.2)
+
+
+#------To make a HeatMap which compare between GA and Ctrl groups-------#
+# Assuming you have already installed and loaded the Seurat package and have your Seurat object named 'seurat_obj'
+
+newActiveIdent<- MacrophageGroup4dpi
+newActiveIdent <- SetIdent(newActiveIdent, value = newActiveIdent@meta.data$Condition)
+seurat_obj<- newActiveIdent
+
+# 1. Identify DEGs between condition groups
+  #markers <- FindMarkers(seurat_obj, ident.1 = "dpi4_GA", ident.2 = "dpi4_Control", min.pct = 0.2)
+  #saveRDS(markers, file = "FindMarkers_betweenIdents_GAvsCtrl.rds")
+markers <-readRDS(file = "FindMarkers_betweenIdents_GAvsCtrl.rds")
+# Check the structure of the markers object, it's should be numeric 
+# If the log2fc column is not numeric, convert it to numeric : "markers$log2fc <- as.numeric(markers$log2fc)"
+str(markers)
+
+# Subset the data to include only DEGs
+DEGs <- markers[markers$p_val_adj < 0.05 & abs(markers$avg_log2FC) > 0.6, ]
+# 2. Subset the data to include only DEGs
+DEGs <- markers[markers$p_val_adj < 0.05 & abs(markers$avg_log2FC) > 0.6, ] # Adjust p-value and log2 fold change threshold as needed
+
+# Extract gene names
+gene_names <- rownames(DEGs)
+
+# Subset the Seurat object to include only DEGs
+seurat_DEGs <- subset(seurat_obj, features = gene_names)
+
+# 3. Plot heatmap
+DoHeatmap(seurat_DEGs, features = gene_names)
+
+# Save the gene markers object as a .rds file
+# saveRDS(MacSubset.markers, file = "MacSubset.markers.rds")
+
+#.DEG identifying differentially expressed genes between the "dpi4_GA" and "dpi4_Control" conditions
+# in the specified subset of single-cell RNA sequencing data (MacSubset1). 
+# The results are stored in the variable DEG_FindAllMarkers.
+        #DEG_FindAllMarkers<-FindMarkers(MacSubset1, ident.1 = "dpi4_GA", ident.2 = "dpi4_Control", min.pct = 0.2, group.by = "Condition", only.pos = F)
+
+#DEG for each cluster 
+DEG_Cluster_0<-FindMarkers(MacrophageGroup4dpi, ident.1 = "dpi4_GA", ident.2 = "dpi4_Control", min.pct = 0.2, group.by = "Condition", subset.ident = 0, only.pos = F)
+DEG_Cluster_1<-FindMarkers(MacrophageGroup4dpi, ident.1 = "dpi4_GA", ident.2 = "dpi4_Control", min.pct = 0.2, group.by = "Condition", subset.ident = 1, only.pos = F)
+DEG_Cluster_2<-FindMarkers(MacrophageGroup4dpi, ident.1 = "dpi4_GA", ident.2 = "dpi4_Control", min.pct = 0.2, group.by = "Condition", subset.ident = 2, only.pos = F)
+DEG_Cluster_3<-FindMarkers(MacrophageGroup4dpi, ident.1 = "dpi4_GA", ident.2 = "dpi4_Control", min.pct = 0.2, group.by = "Condition", subset.ident = 3, only.pos = F)
+DEG_Cluster_4<-FindMarkers(MacrophageGroup4dpi, ident.1 = "dpi4_GA", ident.2 = "dpi4_Control", min.pct = 0.2, group.by = "Condition", subset.ident = 4, only.pos = F)
+DEG_Cluster_5<-FindMarkers(MacrophageGroup4dpi, ident.1 = "dpi4_GA", ident.2 = "dpi4_Control", min.pct = 0.2, group.by = "Condition", subset.ident = 5, only.pos = F)
+DEG_Cluster_6<-FindMarkers(MacrophageGroup4dpi, ident.1 = "dpi4_GA", ident.2 = "dpi4_Control", min.pct = 0.2, group.by = "Condition", subset.ident = 6, only.pos = F)
+DEG_Cluster_7<-FindMarkers(MacrophageGroup4dpi, ident.1 = "dpi4_GA", ident.2 = "dpi4_Control", min.pct = 0.2, group.by = "Condition", subset.ident = 7, only.pos = F)
+
+
+write.table(DEG_FindAllMarkers, "~/Documents/Documents - jacobk's MacBookPro1/Tazhor's lab/Data set analysis/Copaxone/scRNAseq_1d and 4dpi/SubClustering_Macrophages_New/DEG_FindAllMarkers_Mac.csv")
+write.table(DEG_Cluster_0, "~/Documents/Documents - jacobk's MacBookPro1/Tazhor's lab/Data set analysis/Copaxone/scRNAseq_1d and 4dpi/SubClustering_Macrophages_New/DEG_Cluster_0_Mac.csv")
+write.table(DEG_Cluster_1, "~/Documents/Documents - jacobk's MacBookPro1/Tazhor's lab/Data set analysis/Copaxone/scRNAseq_1d and 4dpi/SubClustering_Macrophages_New/DEG_Cluster_1_Mac.csv")
+write.table(DEG_Cluster_2, "~/Documents/Documents - jacobk's MacBookPro1/Tazhor's lab/Data set analysis/Copaxone/scRNAseq_1d and 4dpi/SubClustering_Macrophages_New/DEG_Cluster_2_Mac.csv")
+write.table(DEG_Cluster_3, "~/Documents/Documents - jacobk's MacBookPro1/Tazhor's lab/Data set analysis/Copaxone/scRNAseq_1d and 4dpi/SubClustering_Macrophages_New/DEG_Cluster_3_Mac.csv")
+write.table(DEG_Cluster_4, "~/Documents/Documents - jacobk's MacBookPro1/Tazhor's lab/Data set analysis/Copaxone/scRNAseq_1d and 4dpi/SubClustering_Macrophages_New/DEG_Cluster_4_Mac.csv")
+write.table(DEG_Cluster_5, "~/Documents/Documents - jacobk's MacBookPro1/Tazhor's lab/Data set analysis/Copaxone/scRNAseq_1d and 4dpi/SubClustering_Macrophages_New/DEG_Cluster_5_Mac.csv")
+write.table(DEG_Cluster_6, "~/Documents/Documents - jacobk's MacBookPro1/Tazhor's lab/Data set analysis/Copaxone/scRNAseq_1d and 4dpi/SubClustering_Macrophages_New/DEG_Cluster_6_Mac.csv")
+write.table(DEG_Cluster_7, "~/Documents/Documents - jacobk's MacBookPro1/Tazhor's lab/Data set analysis/Copaxone/scRNAseq_1d and 4dpi/SubClustering_Macrophages_New/DEG_Cluster_7_Mac.csv")
+
+#Number of Cells per cluster
+num_cell_Macrophages<- MacrophageGroup4dpi@meta.data %>% count(seurat_clusters, Condition)
+#write.table(num_cell_Macrophages, "~/Documents/Documents - jacobk's MacBookPro1/Tazhor's lab/Data set analysis/Copaxone/scRNAseq_1d and 4dpi/SubClustering_Macrophages_New/NumCellsPerCluster_Mac.csv")
+
+# Create a bar plot
+# Create a stacked bar plot with labels
+Bar_plot_MacClusters<- ggplot(num_cell_Macrophages, aes(x = seurat_clusters, y = n, fill = Condition)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = n), position = position_stack(vjust = 0.5), size = 3, color = "white") +  # Add text labels
+  labs(x = "Cluster", y = "Number of Cells", title = "Number of Cells in Each Cluster") +
+  theme_minimal()
+
+ggplot(num_cell_Macrophages, aes(x = seurat_clusters, y = n, fill = orig.ident)) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(x = "Cluster", y = "Number of Cells", title = "Number of Cells in Each Cluster") +
+  theme_minimal()
+
+
+# DEG for heatmap
+##MacSubset.markers <- FindAllMarkers(MacSubset1, only.pos = TRUE, min.pct = 0.2, logfc.threshold = 0.2)
+MacSubset.markers<- readRDS("MacSubset.markers.rds")
+# Make a Heatmap for the DEG markers in each cluster # 
+mapal <- colorRampPalette(RColorBrewer::brewer.pal(11,"RdBu"))(256)
+
+
+MacSubset.markers %>%
+  group_by(cluster) %>%
+  dplyr::filter(avg_log2FC > 1)
+
+MacSubset.markers %>%
+  group_by(cluster) %>%
+  dplyr::filter(avg_log2FC > 1) %>%
+  slice_head(n = 10) %>%
+  ungroup() -> top10
+
+
+HeatMap_Macriphages_subsets<- DoHeatmap(MacSubset1, features = top10$gene) + NoLegend() %>% print()
+
+
+pdf("HeatMap_Mac_Subclustered.pdf", width = 14, height = 14)
+print(HeatMap_Macriphages_subsets)
+dev.off()
+
+
+#MacSubset.markers <- FindAllMarkers(MacSubset1, only.pos = TRUE, min.pct = 0.2, logfc.threshold = 0.2)
+
+#TRUE/FALSE by categorize Mac subsets
+RepairMac <- c("Chil3", "Pdcd1lg2", "Retnla", "Rnase2a",
+  "Rbp4", "Cish", "Tmem26", "Chil5", "Chil6", "Folr2", "Timd4","Lyve1",
+  "Il13ra2", "Ccl11", "Tarm1", "Mcf2l", "Irf4",
+  "Entpd3", "Arg1", "Ceacam19", "Ffar4", "Slc7a2",
+  "Cst7", "Scimp", "Lipn", "Serpina3c", 
+  "Flt1", "Socs1", "Ccl22", "Rab15", "Comp",
+  "Ptgs1", "Pcolce2", "Gm4951", "Bex4", "Ccl24",
+  "Mgl2", "Bex1", "Dut", "Ffar2", "Col6a5", "Kcnh4", "Ano1",
+  "Gpr39", "Ccl12", "Foxq1", "Htr2a", "Ier3", "Loxl4")
+
+Tgfb2 <- c("Tgfb2")
+Il1bMarker<- c("Il1b")
+Timd4_positive <- c("Timd4")
+Tgfb2_Marker<- c("Tgfb2")
+Ccn1_Marker<- "Ccn1"
+Ccr2_Marker<- "Ccr2"
+Osm_Marker<- "Osm"
+
+#MHCII signature gene set
+MhcII = as.list(c("B2m","Cd4","Cd74","H2-Aa","H2-Ab1","H2-DMa","H2-DMb2","H2-Eb2",
+                  "H2-Oa","H2-Ob","Cd8a","Klrc1","Cd81",
+                  "Fcrl6","Lag3","Apoe","Calr","Cd36", "Ctsl","H2-K1", 
+                  "Pik3r1","Tlr2","Tpp2","Trem2","Klrk1",  "Tubb5", 
+                  "Cd40","Tgfb1"))
+
+#ModuleScore for repair macrophages
+MacrophageGroup4dpi <- AddModuleScore(MacrophageGroup4dpi,
+                            features = RepairMac,
+                            name="RepairMac")
+FeaturePlot(MacrophageGroup4dpi,features =c("RepairMac1"), order = F, split.by = "Condition", min.cutoff = 1.2, pt.size = 1)
+
+#ModuleScore for Antigen presentation score macrophages
+MacrophageGroup4dpi <- AddModuleScore(MacrophageGroup4dpi,
+                            features = Ccr2_Marker,
+                            name="Ccr2_Marker")
+FeaturePlot(MacrophageGroup4dpi,features =c("Ccr2_Marker1"), order = T, min.cutoff = 0.7, pt.size = 0.4)
+
+#ModuleScore for Il1b macrophages
+MacrophageGroup4dpi <- AddModuleScore(MacrophageGroup4dpi,
+                                      features = Osm_Marker,
+                                      name="Osm_Marker")
+FeaturePlot(MacrophageGroup4dpi,features =c("Osm_Marker1"), order = F, split.by = "Condition", min.cutoff = 0.3, pt.size = 0.7)
+
+#ModuleScore for Timd4 macrophages
+MacrophageGroup4dpi <- AddModuleScore(MacrophageGroup4dpi,
+                                      features = Timd4_positive,
+                                      name="Timd4_positive")
+FeaturePlot(MacrophageGroup4dpi,features =c("Timd4_positive1"), order = F, split.by = "Condition",
+            min.cutoff = 0.2, pt.size = 1)
+
+#ModuleScore for Tgfb2 macrophages
+MacrophageGroup4dpi <- AddModuleScore(MacrophageGroup4dpi,
+                                      features = Tgfb2_Marker,
+                                      name="Tgfb2_Marker")
+FeaturePlot(MacrophageGroup4dpi,features =c("Tgfb2_Marker1"), order = F, split.by = "Condition",
+            min.cutoff = 0.2, pt.size = 1)
+
+#Adding it to the new object
+MacrophageGroup4dpi$Ccr2_Marker1 <- FetchData(MacrophageGroup4dpi, vars = "Ccr2_Marker1")$Ccr2_Marker1 > 0.7
+MacrophageGroup4dpi$RepairMac1 <- FetchData(MacrophageGroup4dpi, vars = "RepairMac1")$RepairMac1 > 1.2
+MacrophageGroup4dpi$Osm_Marker1 <- FetchData(MacrophageGroup4dpi, vars = "Osm_Marker1")$Osm_Marker1 > 1
+MacrophageGroup4dpi$Timd4_positive1 <- FetchData(MacrophageGroup4dpi, vars = "Timd4_positive1")$Timd4_positive1 > 0.2
+MacrophageGroup4dpi$Tgfb2_Marker1 <- FetchData(MacrophageGroup4dpi, vars = "Tgfb2_Marker1")$Tgfb2_Marker1 > 0.2
+
+#Visualize data results
+X1<- DimPlot(MacrophageGroup4dpi,group.by = "Ccr2_Marker1", cols = c("gray","firebrick1"), split.by = "Condition" ,order = F, pt.size = 0.5)
+X2<- DimPlot(MacrophageGroup4dpi,group.by = "RepairMac1", cols = c("gray","firebrick1") ,order = T, pt.size = 0.5)
+X3<- DimPlot(MacrophageGroup4dpi,group.by = "Osm_Marker1", cols = c("gray","firebrick1"), split.by = "Condition" ,order = F, pt.size = 0.5)
+X4<- DimPlot(MacrophageGroup4dpi,group.by = "Timd4_positive1", cols = c("gray","firebrick1"), split.by = "Condition" ,order = F, pt.size = 0.5)
+X5<- DimPlot(MacrophageGroup4dpi,group.by = "Tgfb2_Marker1", cols = c("gray","firebrick1"), split.by = "Condition" ,order = F, pt.size = 0.5)
+pdf("Ccr2_Macrophages.pdf", width = 14, height = 10)
+print(X1)
+dev.off()
+
+#subset the repair Mac subset in both GA and Ctrl group
+RepairSignature_positive<- subset(MacrophageGroup4dpi, RepairMac1 == TRUE)
+# 2. Re-normalize the data, all the steps in one:
+RepairSignature_positive <- NormalizeData(RepairSignature_positive, verbose = FALSE)
+RepairSignature_positive <- FindVariableFeatures(RepairSignature_positive, selection.method = "vst", nfeatures = 2000)
+RepairSignature_positive <- ScaleData(RepairSignature_positive, verbose = FALSE)
+RepairSignature_positive <- RunPCA(RepairSignature_positive, features = VariableFeatures(object = Mac))
+ElbowPlot(RepairSignature_positive, ndims = 50)
+explained_var <- RepairSignature_positive[["pca"]]@stdev ^ 2
+explained_var_ratio <- explained_var / sum(explained_var)
+cumulative_explained_var <- cumsum(explained_var_ratio)
+num_PCs_80 <- which(cumulative_explained_var >= 0.8)[1]
+cat("Number of PCs for 80% variability:", num_PCs_80, "\n")
+RepairSignature_positive <- FindNeighbors(RepairSignature_positive, reduction = "pca", dims = 1:25)
+RepairSignature_positive <- FindClusters(RepairSignature_positive, resolution = 0.2)
+
+# 6. Run UMAP with determined number of PCs
+RepairSignature_positive <- RunUMAP(RepairSignature_positive, dims = 1:30)
+RepairSignature_positive_Subset<- DimPlot(RepairSignature_positive, reduction = "umap",
+                        label = T, label.size = 5,
+                        order = F, pt.size = 0.1) %>% plot()
+DimPlot(RepairSignature_positive, group.by = "seurat_clusters" ,split.by = "Condition" ,order = F, pt.size = 0.5)
+
+#find DEG in the specific subset of repair macrophages in GA compare to Ctrl
+DEG_RepairMac_Subset<-FindMarkers(RepairSignature_positive, ident.1 = "dpi4_GA", ident.2 = "dpi4_Control", group.by = "Condition", only.pos = T)
+write.table(DEG_RepairMac_Subset, "~/Documents/Documents - jacobk's MacBookPro1/Tazhor's lab/Data set analysis/Copaxone/scRNAseq_1d and 4dpi/SubClustering_Macrophages_New/DEG_RepairMac_Subset.csv")
+
+#Count  
+RepairMac1_Number_persampleGroup4dpi<- MacrophageGroup4dpi@meta.data %>% count(RepairMac1 == TRUE, orig.ident)
+MhcII1_Number_persampleGroup4dpi<- MacrophageGroup4dpi@meta.data %>% count(MhcII1 == TRUE, orig.ident)
+Osm_Number_persampleGroup4dpi<- MacrophageGroup4dpi@meta.data %>% count(Osm_Marker1 == TRUE, orig.ident)
+Timd4_positive_Number_persampleGroup4dpi<- MacrophageGroup4dpi@meta.data %>% count(Timd4_positive1 == TRUE, orig.ident)
+Tgfb2_positive_Number_persampleGroup4dpi<- MacrophageGroup4dpi@meta.data %>% count(Tgfb2_Marker1 == TRUE, orig.ident)
+Ccr2_positive_Number_persampleGroup4dpi<- MacrophageGroup4dpi@meta.data %>% count(Ccr2_Marker1 == TRUE, orig.ident)
+
+
+#write.table(RepairMac1_Number_persampleGroup4dpi, "~/Documents/Documents - jacobk's MacBookPro1/Tazhor's lab/Data set analysis/Copaxone/scRNAseq_1d and 4dpi/SubClustering_Macrophages_New/RepairMac1_Number_Group4dpi.csv")
+
+
+# Distribution of marker genes for monocyte/macrophage sub-clusters using the Nebulosa package
+DensityPlot<- plot_density(Group4dpi,c("Timd4","Lyve1","Ccr2","H2-Ab1"), size = 0.1)
+
+pdf("DensityPlot_Sub-ClusterMacrophages.pdf", width = 12, height = 6)
+print(DensityPlot)
+dev.off()
+
+
+
+
+
+
+####--------------------------T_cell_Sub-clustering----------------------------###
+Tcells<- readRDS(file = "scRNA_Cop_Tcells_subseting.rds")
+Tcells_subseting<- Tcells
+DimTcells<- DimPlot(Tcells_subseting, reduction = "umap",
+        label = T, label.size = 5,
+        order = F, pt.size = 1) %>% plot()
+
+#Getting rid of "Day 1" group, and stay only with the groups of Day 4 after injury
+TcellGroup4dpi <- subset(Tcells_subseting, subset = Day == c("dpi4"))
+
+#number of T cells per Culster
+num_cellTcell<- TcellGroup4dpi@meta.data %>% count(seurat_clusters, Condition)
+#write.table(num_cell_Macrophages, "~/Documents/Documents - jacobk's MacBookPro1/Tazhor's lab/Data set analysis/Copaxone/scRNAseq_1d and 4dpi/SubClustering_Macrophages_New/NumCellsPerCluster_Mac.csv")
+
+# Create a bar plot
+# Create a stacked bar plot with labels
+num_cellTcell_BarPlot<- ggplot(num_cellTcell, aes(x = seurat_clusters, y = n, fill = Condition)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = n), position = position_stack(vjust = 0.5), size = 3, color = "white") +  # Add text labels
+  labs(x = "Cluster", y = "Number of Cells", title = "Number of Cells in Each Cluster") +
+  theme_minimal() 
+
+#Visualization Plots
+FeaturePlot(object = TcellGroup4dpi, features = c("Foxp3"), pt.size = 1, split.by = "Condition", reduction = "umap", order = F,
+            cols = c("gray", "red"), min.cutoff = 0)
+
+
+TcellsVlnPlot<- VlnPlot(TcellGroup4dpi, features = c("Cd274", "H2-DMa","Maf"), group.by = "Condition", pt.size = 0, log = F) %>% print()
+TcellsVlnPlot<- VlnPlot(TcellGroup4dpi, features = c("B2m","Nfkbia"), group.by = "Condition", pt.size = 0, log = F) %>% print()
+
+TcellDotPlot<- DotPlot(TcellGroup4dpi, features = c("Gata3", "Foxp3"),group.by = "Condition", cols = c("blue" ,"red"))+ RotatedAxis()
+TcellDotPlot<- DotPlot(TcellGroup4dpi, features = c("Gata3", "Foxp3", "Cd4"),group.by = "Condition", cols = c("blue" ,"red"))+ RotatedAxis() 
+VlnPlot(TcellGroup4dpi, features = c("Lef1"), pt.size = 0.1, log = F, group.by = "Condition")
+
+
+p2<-DimPlot(TcellGroup4dpi, reduction = "umap",
+        label = T, label.size = 5,
+        order = F, pt.size = 1)
+
+pdf("Vln_Th2_signaling.pdf", width = 8, height = 10)
+print(TcellsVlnPlot)
+dev.off()
+
+
+
+YourGenesOfInterest<- c("Foxp3", "Gata3", "Cd4")
+# Calculate the first quantile expression value for each gene
+first_quantile <- apply(GetAssayData(TcellGroup4dpi), 1, quantile, probs = 0.25)
+
+# Subset the Seurat object to include only cells with expression greater than the first quantile for each gene
+cells_filtered <- rowSums(GetAssayData(TcellGroup4dpi) > first_quantile) == ncol(TcellGroup4dpi)
+TcellGroup4dpi_filtered <- TcellGroup4dpi[cells_filtered, ]
+
+# Create a feature plot for each gene, considering only filtered cells
+# Replace 'YourGenesOfInterest' with the list of genes you want to include in the feature plot
+FeaturePlot(TcellGroup4dpi_filtered, features = YourGenesOfInterest, pt.size = 0.5)
+
+# DEG Analysis: dpi4_GA vs. dpi4_Control Conditions in the subclutered T cells
+DEG_FindMarkers_TCells_GAcompareCtrl<-FindMarkers(TcellGroup4dpi, ident.1 = "dpi4_GA", ident.2 = "dpi4_Control", 
+                                min.pct = 0.2, group.by = "Condition", only.pos = F)
+DEG_lymphoid_Only_4dpi<-FindMarkers(lymphoid_Only_4dpi, ident.1 = "dpi4_GA", ident.2 = "dpi4_Control", 
+                                                  min.pct = 0.2, group.by = "Condition", only.pos = F)
+
+write.table(DEG_lymphoid_Only_4dpi,
+"~/Documents/Documents - jacobk's MacBookPro1/Tazhor's lab/Data set analysis/Copaxone/scRNAseq_1d and 4dpi/lymphoid_Only_4dpi_DEG.csv")
+
+
+# find markers for every cluster compared to all remaining cells, report only the positive
+# ones
+Tcells_Subset.markers <- FindAllMarkers(TcellGroup4dpi, only.pos = TRUE, min.pct = 0.2)
+
+# Make a Heatmap for the DEG markers in each cluster # 
+Tcells_Subset.markers %>%
+  group_by(cluster) %>%
+  dplyr::filter(avg_log2FC > 1)
+
+Tcells_Subset.markers %>%
+  group_by(cluster) %>%
+  dplyr::filter(avg_log2FC > 1) %>%
+  slice_head(n = 10) %>%
+  ungroup() -> top10
+
+HeatMap_TCells_subsets<- DoHeatmap(TcellGroup4dpi, features = top10$gene) %>% print()
+
+pdf("TcellsHeatMap_SubClusters_1.pdf", width = 14, height = 14)
+print(HeatMap_TCells_subsets)
+dev.off()
+
+CellCycleScoring(
+  TcellGroup4dpi,
+  s.features,
+  g2m.features,
+  ctrl = NULL,
+  set.ident = FALSE,
+)
+
+####-----------------NEUTROPHILS----------------------###
+
+
+
+## Neutriphils cell sub-clustering ##
+subsetGRN<- readRDS(file = "subsetGRN1_1dpi_object.rds")
+subsetGRN1_1dpi<- subsetGRN
+DimPlot(subsetGRN1_1dpi, reduction = "umap",
+        label = T, label.size = 5,
+        order = F, pt.size = 1) %>% plot()
+
+#number of Neutriphils cells per Culster
+num_cellGRN<- subsetGRN1_1dpi@meta.data %>% count(Condition, orig.ident)
+
+
+# find markers for every cluster compared to all remaining cells, report only the positive
+# ones
+GRN.markers <- FindAllMarkers(subsetGRN1_1dpi, only.pos = TRUE, min.pct = 0.2, logfc.threshold = 0.2)
+
+DEG_GRN_markers_1dpi <- FindMarkers(subsetGRN1_1dpi, ident.1 = "dpi1_GA", ident.2 = "dpi1_Control",
+                                    group.by = "Condition", min.pct = 0,pseudocount.use = 0.1, logfc.threshold = 0)
+#saveRDS(DEG_GRN_markers_1dpi, file = "DEG_GRN_markers_1dpi_GAvsCtrl.rds")
+#saveRDS(GRN.markers, file = "DEG_GRN_markers_1dpi_GAvsCtrl.rds")
+
+x<- readRDS("~/Documents/Documents - jacobk's MacBookPro1/Tazhor's lab/Data set analysis/Copaxone/scRNAseq_1d and 4dpi/DEG_GRN_markers_1dpi_GAvsCtrl.rds")
+# write.table(DEG_GRN_markers_1dpi,
+            "~/Documents/Documents - jacobk's MacBookPro1/Tazhor's lab/Data set analysis/Copaxone/scRNAseq_1d and 4dpi/DEG_GRN_markers_1dpi.csv")
+
+GRN.markers
+# Make a Heatmap for the DEG markers in each cluster # 
+GRN.markers %>%
+  group_by(cluster) %>%
+  dplyr::filter(avg_log2FC > 1)
+
+GRN.markers %>%
+  group_by(cluster) %>%
+  dplyr::filter(avg_log2FC > 1) %>%
+  slice_head(n = 15) %>%
+  ungroup() -> top15
+
+ScaleData(GRN.markers)
+HeatMap_GRN_subsets<- DoHeatmap(subsetGRN1_1dpi, features = top15$gene)+ scale_fill_gradientn(colours = rev(mapal))
+%>% print()
+
+pdf("HeatMap_GRN_only1dpi.pdf", width = 14, height = 14)
+print(HeatMap_GRN_subsets)
+dev.off()
+
+
+#Visualization Plots
+FeaturePlot(object = subsetGRN1_1dpi, features = c("Olfm4"), pt.size = 1, reduction = "umap", order = F,
+            cols = c("gray", "red"), min.cutoff = 0)
+VlnPlot(subsetGRN1_1dpi, features = c("Ctss","Ctsc","H2-DMa","Vcan","Vegfa","Lamp1","Itgb5"), pt.size = 0, log = F, group.by = "seurat_clusters")
+VlnPlot(subsetGRN1_1dpi, features = c("H2-DMa","Itgb5","Cd37","Icam1"), pt.size = 0, log = F, group.by = "seurat_clusters")
+VlnPlot(subsetGRN1_1dpi, features = c("Icam1","Vegfa","Siglecf","H2-DMa"), pt.size = 0, log = F, group.by = "Condition")
+
+GRN_Vln_Plot<- VlnPlot(subsetGRN, features = c("Entpd1","Il15","Il1rn","Ly86", "Basp1", "Il23a","Lcn2", "Mmp8","Cd177"), idents = c("0", "3", "5"), pt.size = 0, log = T, group.by = "seurat_clusters")
+
+DEG_specific_markers <- FindMarkers(subsetGRN1_1dpi, latent.vars = c("Lcn2") ,ident.1 = "dpi1_GA", ident.2 = "dpi1_Control",  group.by = "Condition", min.pct = 0,pseudocount.use = 0.1, logfc.threshold = 0)
+
+N1_Vln<- VlnPlot(subsetGRN1_1dpi, features = c("Olfm4"), group.by = "Condition",
+        pt.size = 0, log = T)
+N2_Vln<-VlnPlot(subsetGRN1_1dpi, features = c("Ctsb","Vegfa"), group.by = "Condition",
+                pt.size = 0, log = F)
+
+N1_dotPlot<- DotPlot(subsetGRN1_1dpi, features = c("Lcn2","Cd177","Fpr1"),group.by = "Condition", cols = c("blue" ,"red"))+ RotatedAxis()
+N2_dotPlot<- DotPlot(subsetGRN1_1dpi, features = c("Il10","Mrc1","Siglecf","Vegfa"),group.by = "Condition", cols = c("blue" ,"red"))+ RotatedAxis()
+N2_dotPlot<- DotPlot(
+  subsetGRN1_1dpi,
+  features = c("Il10", "Mrc1", "Siglecf", "Vegfa"),
+  group.by = "Condition",
+  cols = c("blue", "red"),
+  dot.size = unit(10, "mm"),  # Adjust the dot size as needed
+  text_size = unit(10, "mm")  # Adjust the font size as needed
+) + RotatedAxis()
+
+N2_dotPlot$heatmap_body$gp$size <- unit(50, "mm")
+
+Clusters_dotPlot<- DotPlot(subsetGRN1_1dpi, features = c("Lcn2","Mmp8","Cd177","Olfm4"),group.by = "seurat_clusters", cols = c("blue" ,"red"))+ RotatedAxis()
+
+Clusters_dotPlot + 
+  scale_color_gradient(low = "lightgray", high = "red") +  # Color gradient for dot colors
+  scale_size(range = c(-2, 5))
+
+# Install the ggpubr package if not already installed
+install.packages("ggpubr")
+
+# Adjust the size of the plots if needed
+N1_dotPlot <- N1_dotPlot + theme(legend.position = "none")
+N2_dotPlot <- N2_dotPlot + theme(legend.position = "none")
+
+# Load the ggpubr package
+library(ggpubr)
+ggarrange(dim1 + dim2,
+          labels = c("A", "B"),
+          ncol = 1, nrow = 2,
+          align = "v")
+# Install and load the gridExtra library
+install.packages("gridExtra")
+library(gridExtra)
+
+grid.arrange(N1_dotPlot, N2_dotPlot, nrow = 1, ncol = 2)
+
+
+p2<-DimPlot(subsetGRN1, reduction = "umap",
+            label = T, label.size = 5,
+            order = F, pt.size = 1)
+
+pdf("N1_Vln_Plot_Pro_inflamm.pdf", width = 14, height = 7)
+print(N1_Vln)
+dev.off()
+
+
+
+# Get colors from the viridis palette
+library(viridis)
+
+library(RColorBrewer)
+my_palette <- brewer.pal(27, "Pastel1")  
+my_palette <- viridis_pal()(5)  # 10 is the number of colors you want
+# Define custom colors based on the Category10 palette
+category10_colors <- c("#17becf", "#e377c2", "#2ca02c", "#d62255", "#9467bd")
+
+
+DimPlot(subsetGRN1_1dpi, reduction = "umap", label = F, cols = category10_colors,  label.size = 10, order = F, pt.size = 1)
+
+# 7. Count the number of cells in each cluster
+
+num_cellGRN_1dpi<- subsetGRN1_1dpi@meta.data %>% count(seurat_clusters, orig.ident)
+
+# Create a bar plot
+# Create a stacked bar plot with labels
+ggplot(num_cellGRN_1dpi, aes(x = seurat_clusters, y = n, fill = orig.ident)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = n), position = position_stack(vjust = 0.5), size = 3, color = "white") +  # Add text labels
+  labs(x = "Cluster", y = "Number of Cells", title = "Number of Cells in Each Cluster") +
+  theme_minimal()
+
+ggplot(num_cellGRN_1dpi, aes(x = seurat_clusters, y = n, fill = orig.ident)) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(x = "Cluster", y = "Number of Cells", title = "Number of Cells in Each Cluster") +
+  theme_minimal()
+
+
+VlnPlot(subsetGRN1_1dpi, features = c("Lcn2","Mmp8","Cd177","Ly86","Il1rn"),idents = c("0","1", "2","3"), pt.size = 0, log = F, group.by = "seurat_clusters")
+p1<- VlnPlot(subsetGRN1_1dpi, features = c("Mrc1","Hif1a"),idents = c("0","1", "2","3","4"), pt.size = 0, log = F, group.by = "seurat_clusters")
+p1<- VlnPlot(subsetGRN1_1dpi, features = c("Mmp9","Cd33","Sell"),idents = c("0","1", "2","3","4"), pt.size = 0, log = F, group.by = "seurat_clusters")
+
+p2<- VlnPlot(subsetGRN1_1dpi, features = c("Lrp1","Cd101","Ly86", "Mmp8","Lcn2" ,"Cd82","Cd177","Olfm4","Cd74"),idents = c("0","1", "2","3","4"), pt.size = 0, log = F, group.by = "seurat_clusters")
+p1
+p2
+ggarrange(p2 + p1, rremove("x.text"), 
+              labels = ,
+              ncol = 1, nrow = 2, align = "v")
+
+pdf("GRN_Vln_Plot_Only_1dpi.pdf", width = 10, height = 8)
+print(p2)
+dev.off()
+
+
+genes.of.interest <- c("Mmp8", "Olfm4","Cd177", "Cd37","H2-DMa","Itgb5")
+
+test<- subsetGRN1_1dpi
+avg.exp <- AverageExpression(test, features = genes.of.interest, return.seurat = TRUE)
+data_matrix <- GetAssayData(avg.exp, assay = "RNA", layer = "data")[genes.of.interest, ]
+
+# Example of setting readable cluster names
+Idents(test) <- plyr::mapvalues(Idents(test),from = c("0","1", "2", "3","4"), to = c("Cluster 0","Cluster 1", "Cluster 2", "Cluster 3","Cluster 4"))
+
+
+Heatmap(data_matrix, 
+        name = "Expression", 
+        col = colorRamp2(c(min(data_matrix, na.rm = TRUE), -10, max(data_matrix, na.rm = TRUE)), c("white", "navyblue", "firebrick3")),
+        cluster_columns = FALSE, # Keep columns in their current order
+        show_row_names = TRUE,
+        show_column_names = TRUE,
+        row_names_gp = gpar(fontsize = 10),
+        column_names_gp = gpar(fontsize = 10, angle = 45, hjust = 1),
+        top_annotation = if (exists("cluster_colors")) HeatmapAnnotation(df = data.frame(Cluster = colnames(data_matrix)), col = list(Cluster = cluster_colors)) else NULL
+)
